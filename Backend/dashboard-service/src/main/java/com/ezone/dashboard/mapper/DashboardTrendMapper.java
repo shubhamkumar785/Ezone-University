@@ -1,13 +1,7 @@
 package com.ezone.dashboard.mapper;
 
-import com.ezone.dashboard.dto.AttendanceTrendDto;
-import com.ezone.dashboard.dto.DepartmentDistributionDto;
-import com.ezone.dashboard.dto.EnrollmentTrendDto;
-import com.ezone.dashboard.dto.FeeReportDto;
-import com.ezone.dashboard.entity.AttendanceTrend;
-import com.ezone.dashboard.entity.DepartmentDistribution;
-import com.ezone.dashboard.entity.EnrollmentTrend;
-import com.ezone.dashboard.entity.FeeReport;
+import com.ezone.dashboard.dto.*;
+import com.ezone.dashboard.entity.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,6 +38,42 @@ public class DashboardTrendMapper {
                 .month(entity.getMonth())
                 .collected(Math.round(entity.getCollected()))
                 .target(Math.round(entity.getTarget()))
+                .build();
+    }
+
+    public RecentActivityDto toDto(RecentActivity entity) {
+        if (entity == null) return null;
+        return RecentActivityDto.builder()
+                .id(entity.getId())
+                .time(entity.getTime())
+                .module(entity.getModule())
+                .message(entity.getMessage())
+                .statusColor(entity.getStatusColor())
+                .build();
+    }
+
+    public PendingLeaveDto toDto(PendingLeave entity) {
+        if (entity == null) return null;
+        return PendingLeaveDto.builder()
+                .id(entity.getId())
+                .employee(entity.getEmployee())
+                .department(entity.getDepartment())
+                .leaveType(entity.getLeaveType())
+                .status(entity.getStatus())
+                .initials(entity.getInitials())
+                .time(entity.getTime())
+                .duration(entity.getDuration())
+                .build();
+    }
+
+    public SystemAlertDto toDto(SystemAlert entity) {
+        if (entity == null) return null;
+        return SystemAlertDto.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .message(entity.getMessage())
+                .severity(entity.getSeverity())
+                .timestamp(entity.getTimestamp())
                 .build();
     }
 }

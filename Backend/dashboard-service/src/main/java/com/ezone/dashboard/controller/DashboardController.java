@@ -4,9 +4,8 @@ import com.ezone.dashboard.dto.*;
 import com.ezone.dashboard.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,5 +39,26 @@ public class DashboardController {
     @GetMapping("/fee-report")
     public ResponseEntity<List<FeeReportDto>> getFeeReport() {
         return ResponseEntity.ok(service.getFeeReports());
+    }
+
+    @GetMapping("/recent-activities")
+    public ResponseEntity<Page<RecentActivityDto>> getRecentActivities(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.getRecentActivities(page, size));
+    }
+
+    @GetMapping("/pending-leaves")
+    public ResponseEntity<Page<PendingLeaveDto>> getPendingLeaves(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.getPendingLeaves(page, size));
+    }
+
+    @GetMapping("/system-alerts")
+    public ResponseEntity<Page<SystemAlertDto>> getSystemAlerts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.getSystemAlerts(page, size));
     }
 }

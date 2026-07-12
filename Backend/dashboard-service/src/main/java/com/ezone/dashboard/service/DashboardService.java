@@ -7,6 +7,10 @@ import com.ezone.dashboard.mapper.DashboardOverviewMapper;
 import com.ezone.dashboard.mapper.DashboardTrendMapper;
 import com.ezone.dashboard.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +26,9 @@ public class DashboardService {
     private final AttendanceTrendRepository attendanceRepository;
     private final DepartmentDistributionRepository departmentRepository;
     private final FeeReportRepository feeRepository;
+    private final RecentActivityRepository recentActivityRepository;
+    private final PendingLeaveRepository pendingLeaveRepository;
+    private final SystemAlertRepository systemAlertRepository;
 
     private final DashboardOverviewMapper overviewMapper;
     private final DashboardTrendMapper trendMapper;
@@ -60,5 +67,23 @@ public class DashboardService {
         return feeRepository.findAll().stream()
                 .map(trendMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RecentActivityDto> getRecentActivities(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return recentActivityRepository.findAll(pageable).map(trendMapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PendingLeaveDto> getPendingLeaves(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return pendingLeaveRepository.findAll(pageable).map(trendMapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SystemAlertDto> getSystemAlerts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        return systemAlertRepository.findAll(pageable).map(trendMapper::toDto);
     }
 }

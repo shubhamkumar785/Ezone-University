@@ -7,11 +7,17 @@ C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dash
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\dto\DepartmentDistributionDto.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\dto\EnrollmentTrendDto.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\dto\FeeReportDto.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\dto\PendingLeaveDto.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\dto\RecentActivityDto.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\dto\SystemAlertDto.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\AttendanceTrend.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\DashboardOverview.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\DepartmentDistribution.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\EnrollmentTrend.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\FeeReport.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\PendingLeave.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\RecentActivity.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\entity\SystemAlert.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\exception\GlobalExceptionHandler.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\exception\ResourceNotFoundException.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\mapper\DashboardOverviewMapper.java
@@ -21,6 +27,9 @@ C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dash
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\repository\DepartmentDistributionRepository.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\repository\EnrollmentTrendRepository.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\repository\FeeReportRepository.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\repository\PendingLeaveRepository.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\repository\RecentActivityRepository.java
+C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\repository\SystemAlertRepository.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\security\JwtAuthenticationEntryPoint.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\security\JwtAuthenticationFilter.java
 C:\Users\Shubham Pathak\OneDrive\Documents\Project\Ezone-University\Backend\dashboard-service\src\main\java\com\ezone\dashboard\service\DashboardService.java
