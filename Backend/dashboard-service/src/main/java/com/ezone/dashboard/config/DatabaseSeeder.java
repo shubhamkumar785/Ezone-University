@@ -1,15 +1,33 @@
 package com.ezone.dashboard.config;
 
-import com.ezone.dashboard.entity.*;
-import com.ezone.dashboard.repository.*;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import com.ezone.dashboard.entity.AttendanceTrend;
+import com.ezone.dashboard.entity.DashboardOverview;
+import com.ezone.dashboard.entity.DepartmentDistribution;
+import com.ezone.dashboard.entity.EnrollmentTrend;
+import com.ezone.dashboard.entity.FeeReport;
+import com.ezone.dashboard.entity.PendingLeave;
+import com.ezone.dashboard.entity.RecentActivity;
+import com.ezone.dashboard.entity.SystemAlert;
+import com.ezone.dashboard.repository.AttendanceTrendRepository;
+import com.ezone.dashboard.repository.DashboardOverviewRepository;
+import com.ezone.dashboard.repository.DepartmentDistributionRepository;
+import com.ezone.dashboard.repository.EnrollmentTrendRepository;
+import com.ezone.dashboard.repository.FeeReportRepository;
+import com.ezone.dashboard.repository.PendingLeaveRepository;
+import com.ezone.dashboard.repository.RecentActivityRepository;
+import com.ezone.dashboard.repository.SystemAlertRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+// TODO: DEMO DATA SEEDER DISABLED - Only show valid data from database
+// @Component // Comment out to disable auto-seeding
 public class DatabaseSeeder implements CommandLineRunner {
 
     private final DashboardOverviewRepository overviewRepository;
@@ -23,14 +41,15 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // Re-enable minimal seeding to prevent "Failed to load data" error
+        System.out.println("✅ Seeding minimal dashboard data...");
         seedOverview();
         seedEnrollmentTrend();
         seedAttendanceTrend();
         seedDepartmentDistribution();
         seedFeeReport();
-        seedRecentActivities();
-        seedPendingLeaves();
-        seedSystemAlerts();
+        // Keep activities and leaves empty for now
+        System.out.println("✅ Minimal dashboard data seeded successfully");
     }
 
     private void seedOverview() {

@@ -8,4 +8,5 @@ public interface AuthService {
     void sendOtp(SendOtpRequest request);
     LoginResponse verifyOtp(VerifyOtpRequest request);
     void logout(String loginId);
+    LoginResponse bypassLogin(String loginId); // TODO: TEMPORARY - For testing only
 }

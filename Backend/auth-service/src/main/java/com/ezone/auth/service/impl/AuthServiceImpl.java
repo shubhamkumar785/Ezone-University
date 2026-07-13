@@ -1,5 +1,11 @@
 package com.ezone.auth.service.impl;
 
+import java.time.LocalDateTime;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ezone.auth.config.RateLimitConfig;
 import com.ezone.auth.dto.LoginResponse;
 import com.ezone.auth.dto.SendOtpRequest;
 import com.ezone.auth.dto.VerifyOtpRequest;
@@ -15,14 +21,10 @@ import com.ezone.auth.service.JwtService;
 import com.ezone.auth.service.OtpService;
 import com.ezone.auth.validator.LoginValidator;
 import com.ezone.auth.validator.OtpValidator;
-import com.ezone.auth.config.RateLimitConfig;
+
 import io.github.bucket4j.Bucket;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -117,5 +119,63 @@ public class AuthServiceImpl implements AuthService {
         // We will just verify the user exists for completeness.
         userRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with login ID: " + loginId));
+    }
+    
+    // TODO: TEMPORARY - Bypass authentication for testing dashboards
+    @Override
+    @Transactional
+    public LoginResponse bypassLogin(String loginId) {
+        log.warn("⚠️ BYPASS LOGIN USED - This is for testing only! LoginId: {}", loginId);
+        
+        // Try to find the user, if not found, return a default response based on loginId pattern
+        User user = userRepository.findByLoginId(loginId).orElse(null);
+        
+        if (user != null) {
+            // User found - use their actual data
+            user.setLastLogin(LocalDateTime.now());
+            user.setFailedLoginAttempts(0);
+            userRepository.save(user);
+            
+            String jwtToken = jwtService.generateToken(user.getLoginId(), user.getRole());
+            
+            return LoginResponse.builder()
+                    .jwtToken(jwtToken)
+                    .loginId(user.getLoginId())
+                    .fullName(user.getFullName())
+                    .role(user.getRole())
+                    .expiresIn(jwtService.getExpirationTime())
+                    .build();
+        } else {
+            // User not found - create a mock response based on loginId
+            // Assume loginId pattern determines role (e.g., admin123, student456, teacher789)
+            String role = "STUDENT"; // default
+            String fullName = "Test User";
+            
+            if (loginId != null) {
+                String lowerLoginId = loginId.toLowerCase();
+                if (lowerLoginId.contains("admin")) {
+                    role = "ADMIN";
+                    fullName = "Test Admin";
+                } else if (lowerLoginId.contains("teacher") || lowerLoginId.contains("faculty")) {
+                    role = "TEACHER";
+                    fullName = "Test Teacher";
+                } else if (lowerLoginId.contains("student")) {
+                    role = "STUDENT";
+                    fullName = "Test Student";
+                }
+            }
+            
+            log.warn("⚠️ User not found in DB, generating mock response for: {} with role: {}", loginId, role);
+            
+            String jwtToken = jwtService.generateToken(loginId, com.ezone.auth.enums.Role.valueOf(role));
+            
+            return LoginResponse.builder()
+                    .jwtToken(jwtToken)
+                    .loginId(loginId)
+                    .fullName(fullName)
+                    .role(com.ezone.auth.enums.Role.valueOf(role))
+                    .expiresIn(jwtService.getExpirationTime())
+                    .build();
+        }
     }
 }
