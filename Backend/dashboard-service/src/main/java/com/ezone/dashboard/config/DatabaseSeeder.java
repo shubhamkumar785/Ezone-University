@@ -1,5 +1,6 @@
 package com.ezone.dashboard.config;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import org.springframework.boot.CommandLineRunner;
@@ -12,6 +13,8 @@ import com.ezone.dashboard.entity.EnrollmentTrend;
 import com.ezone.dashboard.entity.FeeReport;
 import com.ezone.dashboard.entity.PendingLeave;
 import com.ezone.dashboard.entity.RecentActivity;
+import com.ezone.dashboard.entity.Student;
+import com.ezone.dashboard.entity.StudentNotification;
 import com.ezone.dashboard.entity.SystemAlert;
 import com.ezone.dashboard.repository.AttendanceTrendRepository;
 import com.ezone.dashboard.repository.DashboardOverviewRepository;
@@ -20,6 +23,8 @@ import com.ezone.dashboard.repository.EnrollmentTrendRepository;
 import com.ezone.dashboard.repository.FeeReportRepository;
 import com.ezone.dashboard.repository.PendingLeaveRepository;
 import com.ezone.dashboard.repository.RecentActivityRepository;
+import com.ezone.dashboard.repository.StudentNotificationRepository;
+import com.ezone.dashboard.repository.StudentRepository;
 import com.ezone.dashboard.repository.SystemAlertRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +43,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final RecentActivityRepository recentActivityRepository;
     private final PendingLeaveRepository pendingLeaveRepository;
     private final SystemAlertRepository systemAlertRepository;
+    private final StudentRepository studentRepository;
+    private final StudentNotificationRepository studentNotificationRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -48,6 +55,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedAttendanceTrend();
         seedDepartmentDistribution();
         seedFeeReport();
+        seedStudentData();
         // Keep activities and leaves empty for now
         System.out.println("✅ Minimal dashboard data seeded successfully");
     }
@@ -200,6 +208,149 @@ public class DatabaseSeeder implements CommandLineRunner {
                     SystemAlert.builder().title("Network Port").message("Switch port 12 interface report error packet count spiked").severity("warning").timestamp("6 days ago").build()
             ));
             System.out.println("Default system alerts seeded successfully.");
+        }
+    }
+
+    private void seedStudentData() {
+        if (studentRepository.count() == 0) {
+            // Create test students with loginIds that match users from auth-service
+            Student student1 = Student.builder()
+                    .loginId("2024CSE001")
+                    .studentId("STU2024001")
+                    .fullName("Rahul Kumar")
+                    .email("rahul.kumar@ezone.edu")
+                    .phone("+91-9876543210")
+                    .department("Computer Science")
+                    .course("B.Tech CSE")
+                    .specialization("AIML")
+                    .semester("6th Semester")
+                    .section("A")
+                    .rollNumber("2024CSE001")
+                    .profilePhoto("https://ui-avatars.com/api/?name=Rahul+Kumar&background=4F7CFE&color=fff&size=200")
+                    .cgpa(8.5)
+                    .attendancePercentage(87.5)
+                    .pendingAssignments(3)
+                    .completedAssignments(12)
+                    .upcomingExams(2)
+                    .status("Active")
+                    .build();
+
+            Student student2 = Student.builder()
+                    .loginId("2024CSE002")
+                    .studentId("STU2024002")
+                    .fullName("Priya Sharma")
+                    .email("priya.sharma@ezone.edu")
+                    .phone("+91-9876543211")
+                    .department("Computer Science")
+                    .course("B.Tech CSE")
+                    .specialization("Data Science")
+                    .semester("6th Semester")
+                    .section("A")
+                    .rollNumber("2024CSE002")
+                    .profilePhoto("https://ui-avatars.com/api/?name=Priya+Sharma&background=4F7CFE&color=fff&size=200")
+                    .cgpa(9.1)
+                    .attendancePercentage(92.0)
+                    .pendingAssignments(1)
+                    .completedAssignments(15)
+                    .upcomingExams(2)
+                    .status("Active")
+                    .build();
+
+            Student student3 = Student.builder()
+                    .loginId("2024ME001")
+                    .studentId("STU2024003")
+                    .fullName("Amit Verma")
+                    .email("amit.verma@ezone.edu")
+                    .phone("+91-9876543212")
+                    .department("Mechanical Engineering")
+                    .course("B.Tech ME")
+                    .specialization(null)
+                    .semester("4th Semester")
+                    .section("B")
+                    .rollNumber("2024ME001")
+                    .profilePhoto("https://ui-avatars.com/api/?name=Amit+Verma&background=4F7CFE&color=fff&size=200")
+                    .cgpa(7.8)
+                    .attendancePercentage(85.0)
+                    .pendingAssignments(5)
+                    .completedAssignments(10)
+                    .upcomingExams(3)
+                    .status("Active")
+                    .build();
+
+            studentRepository.saveAll(Arrays.asList(student1, student2, student3));
+            System.out.println("Test students seeded successfully.");
+
+            // Create notifications for students
+            if (studentNotificationRepository.count() == 0) {
+                StudentNotification notif1 = StudentNotification.builder()
+                        .loginId("2024CSE001")
+                        .title("Assignment Due")
+                        .message("Data Structures Assignment 3 due tomorrow")
+                        .type("warning")
+                        .createdAt(LocalDateTime.now().minusHours(2))
+                        .build();
+
+                StudentNotification notif2 = StudentNotification.builder()
+                        .loginId("2024CSE001")
+                        .title("Exam Schedule")
+                        .message("Mid-term exam scheduled for March 25th")
+                        .type("info")
+                        .createdAt(LocalDateTime.now().minusHours(5))
+                        .build();
+
+                StudentNotification notif3 = StudentNotification.builder()
+                        .loginId("2024CSE001")
+                        .title("Attendance Alert")
+                        .message("Your attendance is below 90% in Operating Systems")
+                        .type("danger")
+                        .createdAt(LocalDateTime.now().minusDays(1))
+                        .build();
+
+                StudentNotification notif4 = StudentNotification.builder()
+                        .loginId("2024CSE001")
+                        .title("Grade Published")
+                        .message("Grades for Algorithm Analysis have been published")
+                        .type("success")
+                        .createdAt(LocalDateTime.now().minusDays(2))
+                        .build();
+
+                StudentNotification notif5 = StudentNotification.builder()
+                        .loginId("2024CSE001")
+                        .title("Fee Reminder")
+                        .message("Semester fee payment deadline: March 31st")
+                        .type("warning")
+                        .createdAt(LocalDateTime.now().minusDays(3))
+                        .build();
+
+                StudentNotification notif6 = StudentNotification.builder()
+                        .loginId("2024CSE002")
+                        .title("Assignment Submitted")
+                        .message("Your Machine Learning project has been submitted successfully")
+                        .type("success")
+                        .createdAt(LocalDateTime.now().minusHours(1))
+                        .build();
+
+                StudentNotification notif7 = StudentNotification.builder()
+                        .loginId("2024CSE002")
+                        .title("Workshop Registration")
+                        .message("Register for AI Workshop by March 20th")
+                        .type("info")
+                        .createdAt(LocalDateTime.now().minusDays(1))
+                        .build();
+
+                StudentNotification notif8 = StudentNotification.builder()
+                        .loginId("2024ME001")
+                        .title("Lab Session")
+                        .message("Thermodynamics lab session rescheduled to Thursday")
+                        .type("warning")
+                        .createdAt(LocalDateTime.now().minusHours(3))
+                        .build();
+
+                studentNotificationRepository.saveAll(Arrays.asList(
+                        notif1, notif2, notif3, notif4, notif5, notif6, notif7, notif8
+                ));
+                System.out.println("Student notifications seeded successfully.");
+            }
         }
     }
 }
