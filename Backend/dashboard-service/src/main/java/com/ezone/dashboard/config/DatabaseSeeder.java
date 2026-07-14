@@ -1,30 +1,49 @@
 package com.ezone.dashboard.config;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import com.ezone.dashboard.entity.AcademicTerm;
+import com.ezone.dashboard.entity.AttendanceRecord;
 import com.ezone.dashboard.entity.AttendanceTrend;
+import com.ezone.dashboard.entity.CAMarks;
 import com.ezone.dashboard.entity.DashboardOverview;
 import com.ezone.dashboard.entity.DepartmentDistribution;
 import com.ezone.dashboard.entity.EnrollmentTrend;
+import com.ezone.dashboard.entity.Faculty;
 import com.ezone.dashboard.entity.FeeReport;
 import com.ezone.dashboard.entity.PendingLeave;
+import com.ezone.dashboard.entity.PracticalMarks;
 import com.ezone.dashboard.entity.RecentActivity;
 import com.ezone.dashboard.entity.Student;
+import com.ezone.dashboard.entity.StudentEnrollment;
 import com.ezone.dashboard.entity.StudentNotification;
+import com.ezone.dashboard.entity.Subject;
+import com.ezone.dashboard.entity.SubjectFacultyMapping;
 import com.ezone.dashboard.entity.SystemAlert;
+import com.ezone.dashboard.repository.AcademicTermRepository;
+import com.ezone.dashboard.repository.AttendanceRecordRepository;
 import com.ezone.dashboard.repository.AttendanceTrendRepository;
+import com.ezone.dashboard.repository.CAMarksRepository;
 import com.ezone.dashboard.repository.DashboardOverviewRepository;
 import com.ezone.dashboard.repository.DepartmentDistributionRepository;
 import com.ezone.dashboard.repository.EnrollmentTrendRepository;
+import com.ezone.dashboard.repository.FacultyRepository;
 import com.ezone.dashboard.repository.FeeReportRepository;
 import com.ezone.dashboard.repository.PendingLeaveRepository;
+import com.ezone.dashboard.repository.PracticalMarksRepository;
 import com.ezone.dashboard.repository.RecentActivityRepository;
+import com.ezone.dashboard.repository.StudentEnrollmentRepository;
 import com.ezone.dashboard.repository.StudentNotificationRepository;
 import com.ezone.dashboard.repository.StudentRepository;
+import com.ezone.dashboard.repository.SubjectFacultyMappingRepository;
+import com.ezone.dashboard.repository.SubjectRepository;
 import com.ezone.dashboard.repository.SystemAlertRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -45,6 +64,14 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final SystemAlertRepository systemAlertRepository;
     private final StudentRepository studentRepository;
     private final StudentNotificationRepository studentNotificationRepository;
+    private final AcademicTermRepository academicTermRepository;
+    private final SubjectRepository subjectRepository;
+    private final StudentEnrollmentRepository studentEnrollmentRepository;
+    private final CAMarksRepository caMarksRepository;
+    private final PracticalMarksRepository practicalMarksRepository;
+    private final FacultyRepository facultyRepository;
+    private final SubjectFacultyMappingRepository subjectFacultyMappingRepository;
+    private final AttendanceRecordRepository attendanceRecordRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -56,6 +83,13 @@ public class DatabaseSeeder implements CommandLineRunner {
         seedDepartmentDistribution();
         seedFeeReport();
         seedStudentData();
+        seedAcademicTerms();
+        seedSubjects();
+        seedFaculty();
+        seedStudentEnrollments();
+        seedSubjectFacultyMappings();
+        seedCAMarks();
+        seedAttendanceRecords();
         // Keep activities and leaves empty for now
         System.out.println("✅ Minimal dashboard data seeded successfully");
     }
@@ -351,6 +385,324 @@ public class DatabaseSeeder implements CommandLineRunner {
                 ));
                 System.out.println("Student notifications seeded successfully.");
             }
+        }
+    }
+
+    private void seedAcademicTerms() {
+        if (academicTermRepository.count() == 0) {
+            AcademicTerm term2601 = AcademicTerm.builder()
+                    .termCode("2601")
+                    .year(2026)
+                    .termName("Term 1")
+                    .startDate(LocalDate.of(2026, 1, 1))
+                    .endDate(LocalDate.of(2026, 6, 30))
+                    .isActive(true)
+                    .status("ACTIVE")
+                    .build();
+
+            AcademicTerm term2602 = AcademicTerm.builder()
+                    .termCode("2602")
+                    .year(2026)
+                    .termName("Term 2")
+                    .startDate(LocalDate.of(2026, 7, 1))
+                    .endDate(LocalDate.of(2026, 12, 31))
+                    .isActive(false)
+                    .status("UPCOMING")
+                    .build();
+
+            academicTermRepository.saveAll(Arrays.asList(term2601, term2602));
+            System.out.println("Academic terms seeded successfully.");
+        }
+    }
+
+    private void seedSubjects() {
+        if (subjectRepository.count() == 0) {
+            // Theory subjects
+            List<Subject> theorySubjects = Arrays.asList(
+                    Subject.builder().subjectCode("CSE3521").subjectName("Software Testing").type("THEORY").department("Computer Science").credits(3).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSE4201").subjectName("Cyber Security in Cloud").type("THEORY").department("Computer Science").credits(3).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSE4204").subjectName("Dev Ops").type("THEORY").department("Computer Science").credits(3).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSEAL61").subjectName("Compiler Design").type("THEORY").department("Computer Science").credits(4).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSA474").subjectName("Artificial Intelligence").type("THEORY").department("Computer Science").credits(4).status("ACTIVE").build()
+            );
+
+            // Practical subjects
+            List<Subject> practicalSubjects = Arrays.asList(
+                    Subject.builder().subjectCode("MRP306").subjectName("Campus to Corporate").type("PRACTICAL").department("Computer Science").credits(2).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSE352D").subjectName("Software Testing Lab").type("PRACTICAL").department("Computer Science").credits(2).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("ECMSL63").subjectName("Compiler Design Lab").type("PRACTICAL").department("Computer Science").credits(2).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSP390").subjectName("Project Based Learning (PBL) - 4").type("PRACTICAL").department("Computer Science").credits(3).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSP394").subjectName("Technical Skill Enhancement Course-2(Application Development Lab)").type("PRACTICAL").department("Computer Science").credits(2).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("CSA472").subjectName("Artificial Intelligence Lab").type("PRACTICAL").department("Computer Science").credits(2).status("ACTIVE").build(),
+                    Subject.builder().subjectCode("RA010IB").subjectName("Introduction to Personal Engineering").type("PRACTICAL").department("Computer Science").credits(1).status("ACTIVE").build()
+            );
+
+            subjectRepository.saveAll(theorySubjects);
+            subjectRepository.saveAll(practicalSubjects);
+            System.out.println("Subjects seeded successfully.");
+        }
+    }
+
+    private void seedStudentEnrollments() {
+        if (studentEnrollmentRepository.count() == 0) {
+            // Get subjects
+            Subject softwareTesting = subjectRepository.findBySubjectCode("CSE3521").orElseThrow();
+            Subject cyberSecurity = subjectRepository.findBySubjectCode("CSE4201").orElseThrow();
+            Subject devOps = subjectRepository.findBySubjectCode("CSE4204").orElseThrow();
+            Subject compilerDesign = subjectRepository.findBySubjectCode("CSEAL61").orElseThrow();
+            Subject ai = subjectRepository.findBySubjectCode("CSA474").orElseThrow();
+            Subject campusToCorporate = subjectRepository.findBySubjectCode("MRP306").orElseThrow();
+            Subject softwareTestingLab = subjectRepository.findBySubjectCode("CSE352D").orElseThrow();
+            Subject compilerLab = subjectRepository.findBySubjectCode("ECMSL63").orElseThrow();
+            Subject pbl = subjectRepository.findBySubjectCode("CSP390").orElseThrow();
+            Subject tsec = subjectRepository.findBySubjectCode("CSP394").orElseThrow();
+            Subject aiLab = subjectRepository.findBySubjectCode("CSA472").orElseThrow();
+            Subject personalEng = subjectRepository.findBySubjectCode("RA010IB").orElseThrow();
+
+            // Enroll student 2024CSE001 in all subjects for term 2601
+            List<StudentEnrollment> enrollments = Arrays.asList(
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(softwareTesting.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(cyberSecurity.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(devOps.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(compilerDesign.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(ai.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(campusToCorporate.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(softwareTestingLab.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(compilerLab.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(pbl.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(tsec.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(aiLab.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build(),
+                    StudentEnrollment.builder().loginId("2024CSE001").subjectId(personalEng.getId()).termCode("2601").semester("6th Semester").enrollmentStatus("ACTIVE").build()
+            );
+
+            studentEnrollmentRepository.saveAll(enrollments);
+            System.out.println("Student enrollments seeded successfully.");
+        }
+    }
+
+    private void seedCAMarks() {
+        if (caMarksRepository.count() == 0 && practicalMarksRepository.count() == 0) {
+            // Get enrollments for student 2024CSE001 in term 2601
+            List<StudentEnrollment> enrollments = studentEnrollmentRepository.findByLoginIdAndTermCode("2024CSE001", "2601");
+
+            for (StudentEnrollment enrollment : enrollments) {
+                Subject subject = subjectRepository.findById(enrollment.getSubjectId()).orElse(null);
+                if (subject == null) continue;
+
+                if ("THEORY".equals(subject.getType())) {
+                    // Seed realistic theory marks (some complete, some partial, some null)
+                    CAMarks marks = null;
+                    
+                    if ("CSE3521".equals(subject.getSubjectCode())) {
+                        // Software Testing - Complete marks
+                        marks = CAMarks.builder()
+                                .enrollmentId(enrollment.getId())
+                                .assignment1(4.5)
+                                .assessment1(8.0)
+                                .assignment2(4.0)
+                                .assessment2(4.5)
+                                .lastUpdated(LocalDateTime.now().minusDays(5))
+                                .updatedBy("teacher001")
+                                .build();
+                    } else if ("CSE4201".equals(subject.getSubjectCode())) {
+                        // Cyber Security - Partial marks (A1 and AS1 uploaded)
+                        marks = CAMarks.builder()
+                                .enrollmentId(enrollment.getId())
+                                .assignment1(4.0)
+                                .assessment1(9.0)
+                                .assignment2(null)
+                                .assessment2(null)
+                                .lastUpdated(LocalDateTime.now().minusDays(3))
+                                .updatedBy("teacher002")
+                                .build();
+                    } else if ("CSE4204".equals(subject.getSubjectCode())) {
+                        // DevOps - Only A1 uploaded
+                        marks = CAMarks.builder()
+                                .enrollmentId(enrollment.getId())
+                                .assignment1(5.0)
+                                .assessment1(null)
+                                .assignment2(null)
+                                .assessment2(null)
+                                .lastUpdated(LocalDateTime.now().minusDays(1))
+                                .updatedBy("teacher003")
+                                .build();
+                    }
+                    // For other theory subjects, no marks uploaded yet (null)
+
+                    if (marks != null) {
+                        caMarksRepository.save(marks);
+                    }
+
+                } else if ("PRACTICAL".equals(subject.getType())) {
+                    // Seed realistic practical marks
+                    PracticalMarks marks = null;
+
+                    if ("CSE352D".equals(subject.getSubjectCode())) {
+                        // Software Testing Lab - Complete marks
+                        marks = PracticalMarks.builder()
+                                .enrollmentId(enrollment.getId())
+                                .caAi(68.0)
+                                .caNaal(85.0)
+                                .caJury(null)
+                                .continuousAssessment(25.0)
+                                .continuousEvaluation(27.0)
+                                .lastUpdated(LocalDateTime.now().minusDays(4))
+                                .updatedBy("teacher001")
+                                .build();
+                    } else if ("CSA472".equals(subject.getSubjectCode())) {
+                        // AI Lab - Partial marks
+                        marks = PracticalMarks.builder()
+                                .enrollmentId(enrollment.getId())
+                                .caAi(70.0)
+                                .caNaal(null)
+                                .caJury(null)
+                                .continuousAssessment(null)
+                                .continuousEvaluation(null)
+                                .lastUpdated(LocalDateTime.now().minusDays(2))
+                                .updatedBy("teacher004")
+                                .build();
+                    }
+                    // For other practical subjects, no marks uploaded yet (null)
+
+                    if (marks != null) {
+                        practicalMarksRepository.save(marks);
+                    }
+                }
+            }
+
+            System.out.println("CA marks seeded successfully.");
+        }
+    }
+
+    private void seedFaculty() {
+        if (facultyRepository.count() == 0) {
+            List<Faculty> faculties = Arrays.asList(
+                    Faculty.builder().facultyId("FAC001").fullName("Shefali Sharma").email("shefali.sharma@ezone.edu").phone("+91-9876501001").department("Computer Science").designation("Professor").status("ACTIVE").build(),
+                    Faculty.builder().facultyId("FAC002").fullName("Ashish Kumar").email("ashish.kumar@ezone.edu").phone("+91-9876501002").department("Computer Science").designation("Associate Professor").status("ACTIVE").build(),
+                    Faculty.builder().facultyId("FAC003").fullName("Mr Sudeep Varshney").email("sudeep.varshney@ezone.edu").phone("+91-9876501003").department("Computer Science").designation("Assistant Professor").status("ACTIVE").build(),
+                    Faculty.builder().facultyId("FAC004").fullName("Mekhala").email("mekhala@ezone.edu").phone("+91-9876501004").department("Computer Science").designation("Assistant Professor").status("ACTIVE").build(),
+                    Faculty.builder().facultyId("FAC005").fullName("Kamaraju Suresh").email("kamaraju.suresh@ezone.edu").phone("+91-9876501005").department("Computer Science").designation("Professor").status("ACTIVE").build()
+            );
+            facultyRepository.saveAll(faculties);
+            System.out.println("Faculty seeded successfully.");
+        }
+    }
+
+    private void seedSubjectFacultyMappings() {
+        if (subjectFacultyMappingRepository.count() == 0) {
+            // Get subjects and faculties
+            Subject softwareTesting = subjectRepository.findBySubjectCode("CSE3521").orElseThrow();
+            Subject cyberSecurity = subjectRepository.findBySubjectCode("CSE4201").orElseThrow();
+            Subject devOps = subjectRepository.findBySubjectCode("CSE4204").orElseThrow();
+            Subject compilerDesign = subjectRepository.findBySubjectCode("CSEAL61").orElseThrow();
+            Subject ai = subjectRepository.findBySubjectCode("CSA474").orElseThrow();
+            Subject campusToCorporate = subjectRepository.findBySubjectCode("MRP306").orElseThrow();
+            Subject softwareTestingLab = subjectRepository.findBySubjectCode("CSE352D").orElseThrow();
+            Subject compilerLab = subjectRepository.findBySubjectCode("ECMSL63").orElseThrow();
+            Subject pbl = subjectRepository.findBySubjectCode("CSP390").orElseThrow();
+            Subject tsec = subjectRepository.findBySubjectCode("CSP394").orElseThrow();
+            Subject aiLab = subjectRepository.findBySubjectCode("CSA472").orElseThrow();
+            Subject personalEng = subjectRepository.findBySubjectCode("RA010IB").orElseThrow();
+
+            Faculty shefali = facultyRepository.findByFacultyId("FAC001").orElseThrow();
+            Faculty ashish = facultyRepository.findByFacultyId("FAC002").orElseThrow();
+            Faculty sudeep = facultyRepository.findByFacultyId("FAC003").orElseThrow();
+            Faculty mekhala = facultyRepository.findByFacultyId("FAC004").orElseThrow();
+            Faculty kamaraju = facultyRepository.findByFacultyId("FAC005").orElseThrow();
+
+            // Map subjects to faculty for term 2601
+            List<SubjectFacultyMapping> mappings = Arrays.asList(
+                    SubjectFacultyMapping.builder().subjectId(softwareTesting.getId()).facultyId(shefali.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(cyberSecurity.getId()).facultyId(ashish.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(devOps.getId()).facultyId(shefali.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(compilerDesign.getId()).facultyId(sudeep.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(ai.getId()).facultyId(kamaraju.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(campusToCorporate.getId()).facultyId(mekhala.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(softwareTestingLab.getId()).facultyId(shefali.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(compilerLab.getId()).facultyId(sudeep.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(pbl.getId()).facultyId(ashish.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(tsec.getId()).facultyId(ashish.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(aiLab.getId()).facultyId(kamaraju.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build(),
+                    SubjectFacultyMapping.builder().subjectId(personalEng.getId()).facultyId(mekhala.getId()).termCode("2601").semester("6th Semester").status("ACTIVE").build()
+            );
+
+            subjectFacultyMappingRepository.saveAll(mappings);
+            System.out.println("Subject-Faculty mappings seeded successfully.");
+        }
+    }
+
+    private void seedAttendanceRecords() {
+        if (attendanceRecordRepository.count() == 0) {
+            // Get enrollments for student 2024CSE001 in term 2601
+            List<StudentEnrollment> enrollments = studentEnrollmentRepository.findByLoginIdAndTermCode("2024CSE001", "2601");
+
+            for (StudentEnrollment enrollment : enrollments) {
+                Subject subject = subjectRepository.findById(enrollment.getSubjectId()).orElse(null);
+                if (subject == null) continue;
+
+                List<AttendanceRecord> attendanceRecords = new ArrayList<>();
+
+                // Seed realistic attendance data (some subjects with attendance, some without)
+                if ("CSE3521".equals(subject.getSubjectCode())) {
+                    // Software Testing - Good attendance (20 classes, 18 present)
+                    for (int i = 1; i <= 20; i++) {
+                        String status = (i == 5 || i == 12) ? "ABSENT" : "PRESENT";
+                        attendanceRecords.add(AttendanceRecord.builder()
+                                .enrollmentId(enrollment.getId())
+                                .attendanceDate(LocalDate.of(2026, 1, i))
+                                .status(status)
+                                .markedBy("FAC001")
+                                .markedAt(LocalDateTime.of(2026, 1, i, 10, 0))
+                                .build());
+                    }
+                } else if ("CSE4201".equals(subject.getSubjectCode())) {
+                    // Cyber Security - Average attendance (18 classes, 15 present, 1 medical)
+                    for (int i = 1; i <= 18; i++) {
+                        String status = "PRESENT";
+                        if (i == 7 || i == 14) status = "ABSENT";
+                        if (i == 16) status = "MEDICAL";
+                        attendanceRecords.add(AttendanceRecord.builder()
+                                .enrollmentId(enrollment.getId())
+                                .attendanceDate(LocalDate.of(2026, 1, i))
+                                .status(status)
+                                .markedBy("FAC002")
+                                .markedAt(LocalDateTime.of(2026, 1, i, 11, 0))
+                                .build());
+                    }
+                } else if ("CSE352D".equals(subject.getSubjectCode())) {
+                    // Software Testing Lab - Perfect attendance (15 classes, 15 present)
+                    for (int i = 1; i <= 15; i++) {
+                        attendanceRecords.add(AttendanceRecord.builder()
+                                .enrollmentId(enrollment.getId())
+                                .attendanceDate(LocalDate.of(2026, 1, i))
+                                .status("PRESENT")
+                                .markedBy("FAC001")
+                                .markedAt(LocalDateTime.of(2026, 1, i, 14, 0))
+                                .build());
+                    }
+                } else if ("CSA472".equals(subject.getSubjectCode())) {
+                    // AI Lab - Low attendance (12 classes, 8 present, 1 event)
+                    for (int i = 1; i <= 12; i++) {
+                        String status = "PRESENT";
+                        if (i == 3 || i == 6 || i == 10) status = "ABSENT";
+                        if (i == 9) status = "EVENT";
+                        attendanceRecords.add(AttendanceRecord.builder()
+                                .enrollmentId(enrollment.getId())
+                                .attendanceDate(LocalDate.of(2026, 1, i))
+                                .status(status)
+                                .markedBy("FAC005")
+                                .markedAt(LocalDateTime.of(2026, 1, i, 15, 0))
+                                .build());
+                    }
+                }
+                // For other subjects, no attendance recorded yet (empty)
+
+                if (!attendanceRecords.isEmpty()) {
+                    attendanceRecordRepository.saveAll(attendanceRecords);
+                }
+            }
+
+            System.out.println("Attendance records seeded successfully.");
         }
     }
 }
