@@ -29,7 +29,7 @@ const TeacherTable = ({ teachers = [], onEdit, onDeactivate }) => {
           ) : (
             teachers.map((teacher) => (
               <tr key={teacher.id}>
-                <td className="table-highlight">{teacher.id}</td>
+                <td className="table-highlight">{teacher.facultyId || teacher.id}</td>
                 <td>
                   <div className="table-cell-profile">
                     <div className="table-avatar-initials">

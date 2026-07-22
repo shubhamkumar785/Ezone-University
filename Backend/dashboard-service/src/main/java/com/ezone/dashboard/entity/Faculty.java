@@ -34,6 +34,13 @@ public class Faculty {
     
     private String designation;
     
+    private String qualification;
+    
+    private String experience;
+    
+    @Column(name = "joining_date")
+    private String joiningDate;
+    
     @Column(nullable = false)
     @Builder.Default
     private String status = "ACTIVE"; // ACTIVE, INACTIVE

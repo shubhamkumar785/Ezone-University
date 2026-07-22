@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../common/Button';
+import { teacherService } from '../../services/teacherService';
 
 const TeacherForm = ({ initialData = null, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
+    facultyId: '',
     fullName: '',
     email: '',
     department: '',
@@ -17,6 +19,7 @@ const TeacherForm = ({ initialData = null, onSubmit, onCancel }) => {
   useEffect(() => {
     if (initialData) {
       setFormData({
+        facultyId: initialData.facultyId || initialData.id || '',
         fullName: initialData.fullName || '',
         email: initialData.email || '',
         department: initialData.department || '',
@@ -25,6 +28,11 @@ const TeacherForm = ({ initialData = null, onSubmit, onCancel }) => {
         experience: initialData.experience || '',
         joiningDate: initialData.joiningDate || ''
       });
+    } else {
+      // Auto-generate ID for new teacher
+      teacherService.getNextId().then(nextId => {
+        setFormData(prev => ({ ...prev, facultyId: nextId }));
+      }).catch(err => console.error('Failed to fetch next ID', err));
     }
   }, [initialData]);
 
@@ -67,6 +75,18 @@ const TeacherForm = ({ initialData = null, onSubmit, onCancel }) => {
     <form className="ez-modal-form" onSubmit={handleSubmit}>
       <h3 className="form-modal-title">{initialData ? 'Edit Teacher Profile' : 'Add New Teacher'}</h3>
       <div className="form-fields-grid">
+        {/* Teacher ID (Read Only) */}
+        <div className="form-group-full">
+          <label className="ez-input-label">Teacher ID (Auto-Generated)</label>
+          <input
+            type="text"
+            className="ez-input-field"
+            value={formData.facultyId || 'Generating...'}
+            readOnly
+            style={{ backgroundColor: '#f3f4f6', color: '#6b7280', cursor: 'not-allowed' }}
+          />
+        </div>
+
         {/* Full Name */}
         <div className="form-group-full">
           <label className="ez-input-label">Full Name *</label>

@@ -97,8 +97,8 @@ const Teachers = () => {
   const filteredTeachers = teachers.filter((teacher) => {
     const matchesSearch =
       teacher.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      teacher.id.toLowerCase().includes(search.toLowerCase()) ||
-      teacher.email.toLowerCase().includes(search.toLowerCase());
+      (teacher.facultyId || '').toLowerCase().includes(search.toLowerCase()) ||
+      (teacher.email || '').toLowerCase().includes(search.toLowerCase());
     const matchesDept = deptFilter ? teacher.department === deptFilter : true;
     const matchesStatus = statusFilter ? teacher.status === statusFilter : true;
 

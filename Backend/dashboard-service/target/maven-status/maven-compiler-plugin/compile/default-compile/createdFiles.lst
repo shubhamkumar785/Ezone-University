@@ -69,6 +69,7 @@ com\ezone\dashboard\repository\RecentActivityRepository.class
 com\ezone\dashboard\entity\FeeReport.class
 com\ezone\dashboard\entity\StudentEnrollment$StudentEnrollmentBuilder.class
 com\ezone\dashboard\exception\GlobalExceptionHandler.class
+com\ezone\dashboard\controller\AdminTeacherController.class
 com\ezone\dashboard\entity\SubjectFacultyMapping.class
 com\ezone\dashboard\repository\DashboardOverviewRepository.class
 com\ezone\dashboard\dto\SystemAlertDto.class
@@ -87,11 +88,13 @@ com\ezone\dashboard\entity\SystemAlert.class
 com\ezone\dashboard\dto\SystemAlertDto$SystemAlertDtoBuilder.class
 com\ezone\dashboard\entity\AttendanceSessionStatus.class
 com\ezone\dashboard\entity\AttendanceTrend$AttendanceTrendBuilder.class
+com\ezone\dashboard\dto\StudentListDto.class
 com\ezone\dashboard\entity\RecentActivity.class
 com\ezone\dashboard\repository\AcademicCalendarRepository.class
 com\ezone\dashboard\dto\AttendanceTrendDto$AttendanceTrendDtoBuilder.class
 com\ezone\dashboard\dto\DayWiseAttendanceResponse.class
 com\ezone\dashboard\entity\RecentActivity$RecentActivityBuilder.class
+com\ezone\dashboard\dto\StudentListDto$StudentListDtoBuilder.class
 com\ezone\dashboard\entity\Subject.class
 com\ezone\dashboard\dto\DashboardSummaryResponse$NotificationItem.class
 com\ezone\dashboard\service\DayWiseAttendanceService$1.class
@@ -115,6 +118,7 @@ com\ezone\dashboard\service\DashboardService.class
 com\ezone\dashboard\dto\SubjectAttendanceResponse.class
 com\ezone\dashboard\repository\SystemAlertRepository.class
 com\ezone\dashboard\dto\PendingLeaveDto$PendingLeaveDtoBuilder.class
+com\ezone\dashboard\service\AdminTeacherService.class
 com\ezone\dashboard\repository\FeeReportRepository.class
 com\ezone\dashboard\dto\AcademicTermResponse$AcademicTermResponseBuilder.class
 com\ezone\dashboard\dto\MonthInfo.class
