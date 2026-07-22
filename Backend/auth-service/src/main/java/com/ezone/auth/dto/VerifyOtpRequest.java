@@ -14,4 +14,6 @@ public class VerifyOtpRequest {
 
     @NotBlank(message = "OTP cannot be blank")
     private String otp;
+
+    private String role;
 }

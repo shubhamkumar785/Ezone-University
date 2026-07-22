@@ -124,10 +124,10 @@ public class AuthServiceImpl implements AuthService {
     // TODO: TEMPORARY - Bypass authentication for testing dashboards
     @Override
     @Transactional
-    public LoginResponse bypassLogin(String loginId) {
-        log.warn("⚠️ BYPASS LOGIN USED - This is for testing only! LoginId: {}", loginId);
+    public LoginResponse bypassLogin(String loginId, String requestedRole) {
+        log.warn("⚠️ BYPASS LOGIN USED - This is for testing only! LoginId: {}, Role: {}", loginId, requestedRole);
         
-        // Try to find the user, if not found, return a default response based on loginId pattern
+        // Try to find the user, if not found, return a default response based on loginId pattern or requested role
         User user = userRepository.findByLoginId(loginId).orElse(null);
         
         if (user != null) {
@@ -146,17 +146,19 @@ public class AuthServiceImpl implements AuthService {
                     .expiresIn(jwtService.getExpirationTime())
                     .build();
         } else {
-            // User not found - create a mock response based on loginId
-            // Assume loginId pattern determines role (e.g., admin123, student456, teacher789)
+            // User not found - create a mock response based on requested role or loginId
             String role = "STUDENT"; // default
             String fullName = "Test User";
             
-            if (loginId != null) {
+            if (requestedRole != null && !requestedRole.isBlank()) {
+                role = requestedRole.toUpperCase();
+                fullName = "Test " + role.substring(0, 1).toUpperCase() + role.substring(1).toLowerCase();
+            } else if (loginId != null) {
                 String lowerLoginId = loginId.toLowerCase();
                 if (lowerLoginId.contains("admin")) {
                     role = "ADMIN";
                     fullName = "Test Admin";
-                } else if (lowerLoginId.contains("teacher") || lowerLoginId.contains("faculty")) {
+                } else if (lowerLoginId.contains("teacher") || lowerLoginId.contains("faculty") || lowerLoginId.startsWith("tch")) {
                     role = "TEACHER";
                     fullName = "Test Teacher";
                 } else if (lowerLoginId.contains("student")) {

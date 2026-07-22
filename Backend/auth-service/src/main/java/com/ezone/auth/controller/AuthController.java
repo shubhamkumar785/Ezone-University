@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public ResponseEntity<LoginResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
         // TODO: TEMPORARY - Bypass authentication for testing
-        LoginResponse response = authService.bypassLogin(request.getLoginId());
+        LoginResponse response = authService.bypassLogin(request.getLoginId(), request.getRole());
         return ResponseEntity.ok(response);
         
         // COMMENTED OUT - Original OTP verification
@@ -43,7 +43,8 @@ public class AuthController {
     @PostMapping("/bypass-login")
     public ResponseEntity<LoginResponse> bypassLogin(@RequestBody java.util.Map<String, String> request) {
         String loginId = request.get("loginId");
-        LoginResponse response = authService.bypassLogin(loginId);
+        String role = request.get("role");
+        LoginResponse response = authService.bypassLogin(loginId, role);
         return ResponseEntity.ok(response);
     }
 
