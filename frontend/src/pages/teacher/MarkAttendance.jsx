@@ -3,18 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, X, Search, Save } from 'lucide-react';
 import { toast } from 'react-toastify';
 import Button from '../../components/common/Button';
+import { teacherDashboardService } from '../../services/teacherDashboardService';
 
 const MarkAttendance = () => {
   const navigate = useNavigate();
   const [selectedSection, setSelectedSection] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [students, setStudents] = useState([
-    { id: '1', rollNo: 'CSE001', name: 'Alice Smith', status: 'present' },
-    { id: '2', rollNo: 'CSE002', name: 'Bob Johnson', status: 'present' },
-    { id: '3', rollNo: 'CSE003', name: 'Charlie Brown', status: 'absent' },
-    { id: '4', rollNo: 'CSE004', name: 'Diana Prince', status: 'present' },
-    { id: '5', rollNo: 'CSE005', name: 'Evan Wright', status: 'present' },
-  ]);
+  const [selectedTime, setSelectedTime] = useState('');
+  const [students, setStudents] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleStatusChange = (id, newStatus) => {
     setStudents(students.map(s => s.id === id ? { ...s, status: newStatus } : s));
@@ -24,14 +24,38 @@ const MarkAttendance = () => {
     setStudents(students.map(s => ({ ...s, status })));
   };
 
-  const handleSave = () => {
+  const handleLoadStudents = async () => {
     if (!selectedSection) {
       toast.error('Please select a section');
       return;
     }
-    // Simulate API call
-    toast.success(`Attendance saved for ${selectedSection} on ${selectedDate}`);
-    navigate('/teacher/dashboard');
+    if (!selectedDate) {
+      toast.error('Please select a date');
+      return;
+    }
+    if (!selectedTime) {
+      toast.error('Please select a time period');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const data = await teacherDashboardService.getStudentsBySection(selectedSection);
+      setStudents(data);
+      setIsLoaded(true);
+      setIsSubmitted(false);
+    } catch (error) {
+      toast.error('Failed to load students');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSave = () => {
+    if (!isLoaded) return;
+    // Simulate API call to save attendance
+    setIsSubmitted(true);
+    toast.success(`Attendance submitted successfully`);
   };
 
   return (
@@ -52,12 +76,12 @@ const MarkAttendance = () => {
         </div>
 
         {/* Filters */}
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '24px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+        <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '24px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '20px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#666', marginBottom: '8px' }}>Select Section</label>
             <select 
               value={selectedSection}
-              onChange={(e) => setSelectedSection(e.target.value)}
+              onChange={(e) => { setSelectedSection(e.target.value); setIsLoaded(false); setIsSubmitted(false); }}
               style={{ width: '100%', padding: '10px 12px', border: '1px solid #E0E0E0', borderRadius: '8px', fontSize: '14px', outline: 'none' }}
             >
               <option value="">-- Select Section --</option>
@@ -70,18 +94,54 @@ const MarkAttendance = () => {
             <input 
               type="date" 
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={(e) => { setSelectedDate(e.target.value); setIsLoaded(false); setIsSubmitted(false); }}
               style={{ width: '100%', padding: '10px 12px', border: '1px solid #E0E0E0', borderRadius: '8px', fontSize: '14px', outline: 'none' }}
             />
           </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#666', marginBottom: '8px' }}>Time Period</label>
+            <select 
+              value={selectedTime}
+              onChange={(e) => { setSelectedTime(e.target.value); setIsLoaded(false); setIsSubmitted(false); }}
+              style={{ width: '100%', padding: '10px 12px', border: '1px solid #E0E0E0', borderRadius: '8px', fontSize: '14px', outline: 'none' }}
+            >
+              <option value="">-- Select Time --</option>
+              <option value="09:00-10:00">09:00 AM - 10:00 AM</option>
+              <option value="10:00-11:00">10:00 AM - 11:00 AM</option>
+              <option value="11:15-12:15">11:15 AM - 12:15 PM</option>
+              <option value="13:00-14:00">01:00 PM - 02:00 PM</option>
+            </select>
+          </div>
           <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-            <Button variant="primary" style={{ width: '100%', height: '42px' }}>
-              Load Students
+            <Button variant="primary" onClick={handleLoadStudents} disabled={isLoading} style={{ width: '100%', height: '42px', whiteSpace: 'nowrap', padding: '0 24px', opacity: isLoading ? 0.7 : 1 }}>
+              {isLoading ? 'Loading...' : 'Load Students'}
             </Button>
           </div>
         </div>
 
+        {/* Success Container */}
+        {isSubmitted && (
+          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', padding: '48px 24px', textAlign: 'center' }}>
+            <div style={{ 
+              width: '64px', height: '64px', backgroundColor: '#ECFDF5', borderRadius: '50%', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' 
+            }}>
+              <Check size={32} color="#10B981" />
+            </div>
+            <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111827', marginBottom: '12px' }}>
+              Attendance Submitted Successfully!
+            </h2>
+            <p style={{ fontSize: '15px', color: '#6B7280', marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>
+              The attendance records for {selectedSection} on {selectedDate} at {selectedTime} have been saved securely.
+            </p>
+            <Button variant="outline" onClick={() => { setIsLoaded(false); setIsSubmitted(false); setSelectedSection(''); }}>
+              Mark Another Attendance
+            </Button>
+          </div>
+        )}
+
         {/* Student List */}
+        {isLoaded && !isSubmitted && (
         <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           <div style={{ padding: '20px', borderBottom: '1px solid #E0E0E0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>Student List</h3>
@@ -152,6 +212,7 @@ const MarkAttendance = () => {
             </Button>
           </div>
         </div>
+        )}
 
       </div>
     </div>

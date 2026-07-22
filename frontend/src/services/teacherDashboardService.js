@@ -19,5 +19,17 @@ export const teacherDashboardService = {
       console.error('Error fetching dashboard summary:', error);
       throw error;
     }
+  },
+
+  getStudentsBySection: async (section) => {
+    try {
+      const response = await api.get('/api/teacher/dashboard/students', {
+        params: { section }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching students by section:', error);
+      throw error;
+    }
   }
 };
