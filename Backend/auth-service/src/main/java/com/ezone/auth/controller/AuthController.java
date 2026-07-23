@@ -19,34 +19,17 @@ public class AuthController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@Valid @RequestBody SendOtpRequest request) {
-        // TODO: TEMPORARY - Bypass OTP validation for testing
-        // Just return success without checking database or sending email
+        authService.sendOtp(request);
         return ResponseEntity.ok().body(java.util.Map.of("message", "OTP sent successfully to registered email."));
-        
-        // COMMENTED OUT - Original OTP sending
-        // authService.sendOtp(request);
-        // return ResponseEntity.ok().body(java.util.Map.of("message", "OTP sent successfully to registered email."));
     }
 
     @PostMapping("/verify-otp")
     public ResponseEntity<LoginResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
-        // TODO: TEMPORARY - Bypass authentication for testing
-        LoginResponse response = authService.bypassLogin(request.getLoginId(), request.getRole());
+        LoginResponse response = authService.verifyOtp(request);
         return ResponseEntity.ok(response);
-        
-        // COMMENTED OUT - Original OTP verification
-        // LoginResponse response = authService.verifyOtp(request);
-        // return ResponseEntity.ok(response);
     }
     
-    // TODO: TEMPORARY - Direct login bypass endpoint for testing dashboards
-    @PostMapping("/bypass-login")
-    public ResponseEntity<LoginResponse> bypassLogin(@RequestBody java.util.Map<String, String> request) {
-        String loginId = request.get("loginId");
-        String role = request.get("role");
-        LoginResponse response = authService.bypassLogin(loginId, role);
-        return ResponseEntity.ok(response);
-    }
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {

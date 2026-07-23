@@ -94,6 +94,10 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByLoginId(request.getLoginId())
                 .orElseThrow(() -> new UserNotFoundException("User not found with login ID: " + request.getLoginId()));
 
+        if (request.getRole() != null && !user.getRole().name().equalsIgnoreCase(request.getRole())) {
+            throw new IllegalArgumentException("Role mismatch: You are not authorized to login as " + request.getRole());
+        }
+
         otpService.verifyOtp(user, request.getOtp());
 
         user.setLastLogin(LocalDateTime.now());
@@ -121,63 +125,5 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with login ID: " + loginId));
     }
     
-    // TODO: TEMPORARY - Bypass authentication for testing dashboards
-    @Override
-    @Transactional
-    public LoginResponse bypassLogin(String loginId, String requestedRole) {
-        log.warn("⚠️ BYPASS LOGIN USED - This is for testing only! LoginId: {}, Role: {}", loginId, requestedRole);
-        
-        // Try to find the user, if not found, return a default response based on loginId pattern or requested role
-        User user = userRepository.findByLoginId(loginId).orElse(null);
-        
-        if (user != null) {
-            // User found - use their actual data
-            user.setLastLogin(LocalDateTime.now());
-            user.setFailedLoginAttempts(0);
-            userRepository.save(user);
-            
-            String jwtToken = jwtService.generateToken(user.getLoginId(), user.getRole());
-            
-            return LoginResponse.builder()
-                    .jwtToken(jwtToken)
-                    .loginId(user.getLoginId())
-                    .fullName(user.getFullName())
-                    .role(user.getRole())
-                    .expiresIn(jwtService.getExpirationTime())
-                    .build();
-        } else {
-            // User not found - create a mock response based on requested role or loginId
-            String role = "STUDENT"; // default
-            String fullName = "Test User";
-            
-            if (requestedRole != null && !requestedRole.isBlank()) {
-                role = requestedRole.toUpperCase();
-                fullName = "Test " + role.substring(0, 1).toUpperCase() + role.substring(1).toLowerCase();
-            } else if (loginId != null) {
-                String lowerLoginId = loginId.toLowerCase();
-                if (lowerLoginId.contains("admin")) {
-                    role = "ADMIN";
-                    fullName = "Test Admin";
-                } else if (lowerLoginId.contains("teacher") || lowerLoginId.contains("faculty") || lowerLoginId.startsWith("tch")) {
-                    role = "TEACHER";
-                    fullName = "Test Teacher";
-                } else if (lowerLoginId.contains("student")) {
-                    role = "STUDENT";
-                    fullName = "Test Student";
-                }
-            }
-            
-            log.warn("⚠️ User not found in DB, generating mock response for: {} with role: {}", loginId, role);
-            
-            String jwtToken = jwtService.generateToken(loginId, com.ezone.auth.enums.Role.valueOf(role));
-            
-            return LoginResponse.builder()
-                    .jwtToken(jwtToken)
-                    .loginId(loginId)
-                    .fullName(fullName)
-                    .role(com.ezone.auth.enums.Role.valueOf(role))
-                    .expiresIn(jwtService.getExpirationTime())
-                    .build();
-        }
-    }
+
 }

@@ -44,10 +44,11 @@ const Login = () => {
       console.log(error.response);
       console.log(error.response?.data);
       
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
-      alert(errorMessage);
+      let errorMessage = error.response?.data?.message || error.response?.data?.error || error.message;
+      if (errorMessage?.toLowerCase().includes('user not found')) {
+        errorMessage = "ID doesn't exist";
+      }
       setError(errorMessage);
-      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -83,9 +84,15 @@ const Login = () => {
         default: navigate('/login', { replace: true });
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.response?.data?.error || 'Invalid or expired OTP';
+      let errorMessage = err.response?.data?.message || err.response?.data?.error || 'Invalid or expired OTP';
+      
+      if (errorMessage?.toLowerCase().includes('user not found')) {
+        errorMessage = "ID doesn't exist";
+      } else if (errorMessage?.toLowerCase().includes('otp') || errorMessage?.toLowerCase().includes('invalid')) {
+        errorMessage = "OTP wrong";
+      }
+      
       setError(errorMessage);
-      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
